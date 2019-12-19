@@ -9,13 +9,13 @@ set(generate_tests_script ${atf_core_DIR}/../scripts/generate_tests.py)
 
 function(atf_test TEST_GENERATION_CONFIG_FILE)
     if(CATKIN_ENABLE_TESTING)
-        message(STATUS "ATF: executing test generation macro")
+        message("ATF: executing test generation macro")
         
         find_package(roslaunch REQUIRED)
         find_package(rostest REQUIRED)
 
         ############
-        message(STATUS "ATF: generating test files")        
+        message("ATF: generating test files")        
         execute_process(
             COMMAND python ${generate_tests_script} ${PROJECT_NAME} ${TEST_GENERATION_CONFIG_FILE} ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR}
             RESULT_VARIABLE generation_result
@@ -27,7 +27,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         set(TEST_GENERATED_PATH ${PROJECT_BINARY_DIR}/test_generated)
         
         ############
-        message(STATUS "ATF: roslaunch checking test files")
+        message("ATF: roslaunch checking test files")
         file(GLOB_RECURSE test_list
             LIST_DIRECTORIES false
             "${TEST_GENERATED_PATH}/*.test"
@@ -38,7 +38,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         endforeach()
 
         ############
-        message(STATUS "ATF: cleaning")
+        message("ATF: cleaning")
         add_rostest(${TEST_GENERATED_PATH}/cleaning.test)
         add_custom_target(atf_${PROJECT_NAME}_cleaning
             COMMAND echo "cccccccccccccccccccccccccccccccleaning"
@@ -47,7 +47,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         )
 
         ############
-        message(STATUS "ATF: recording")
+        message("ATF: recording")
         file(GLOB TEST_NAMES_RECORDING RELATIVE ${TEST_GENERATED_PATH} ${TEST_GENERATED_PATH}/recording_*.test)
         foreach(TEST_NAME_RECORDING ${TEST_NAMES_RECORDING})
             # recording
@@ -67,7 +67,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         )
 
         ############
-        message(STATUS "ATF: analysing")
+        message("ATF: analysing")
         add_rostest(${TEST_GENERATED_PATH}/analysing.test DEPENDENCIES ${_TARGET_NAMES_RECORDING})
         add_custom_target(atf_${PROJECT_NAME}_analysing
             COMMAND echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaanalysing"
@@ -78,7 +78,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         add_rostest(${TEST_GENERATED_PATH}/uploading.test DEPENDENCIES atf_${PROJECT_NAME}_analysing)
 
         ############
-        message(STATUS "ATF: uploading")
+        message("ATF: uploading")
         add_custom_target(atf_${PROJECT_NAME}_uploading
             COMMAND echo "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuploading"
             DEPENDS
@@ -86,7 +86,7 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
                 _run_tests_${PROJECT_NAME}_rostest_test_generated_uploading.test
         )
         ############
-        message(STATUS "ATF: gathering all atf test steps")
+        message("ATF: gathering all atf test steps")
         add_custom_target(atf_${PROJECT_NAME}
             COMMAND echo "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaatf"
             DEPENDS
@@ -98,6 +98,6 @@ function(atf_test TEST_GENERATION_CONFIG_FILE)
         add_dependencies(run_tests atf_${PROJECT_NAME})
         add_dependencies(run_tests_${PROJECT_NAME} atf_${PROJECT_NAME})
 
-        message(STATUS "ATF: executing test generation macro done!")
+        message("ATF: executing test generation macro done!")
     endif()
 endfunction()
